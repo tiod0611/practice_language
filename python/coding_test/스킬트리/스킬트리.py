@@ -33,67 +33,34 @@ case3) 스킬트리의 앞부분에 선행 스킬이 없는 경우
 """
 
 """
-풀이 전략 1) 
-1. 스킬트리이므로, 한번 익힌 스킬을 나중에 다시 배울 수 없다. 즉, 등장한 character는 다시 등장하지 않는다.
-    regular expression을 사용하여 문자열의 index자리를 확인하고 skill 순서에 맞게 index가 증가하지 않는 개수만큼 list의 길이에서 빼자.
-    1-1. skill중 skill_trees에 없는 것은 처음부터 제거
+풀이 전략)
+
+핵심 스킬의 순서만 보면 됨.
+스킬트리에서 핵심 스킬과 중복되는 스킬을 제외하고 모두 제거
+
+이때, 핵심 스킬의 뒷 부분은 없어도 무방함. 따라서 스킬트리에서 남은 스킬의 길이 만큼만 비교하면 됨.
+
+핵심 스킬의 길이를 스킬 트리의 남은 길이와 맞춰줌.
+
+그리고 둘을 비교할 때 같으면 통과
+그렇지 않으면 무조건 잘 못 된 것으로 본다.
+
 """
-
-def check_natural(sequence):
-    for i in range(1, len(sequence)):
-        # 원소가 순차적으로 증가하는지 판별
-        # len = n
-        # a_k = e_n - e_(n-1)
-
-        e_n = sequence[i] 
-        e_n_1 = sequence[i-1] 
-
-        if e_n == -1 and e_n_1 > 0: #1항이 음수라면 패스 
-            continue
-
-        
-        result = e_n - e_n_1
-
-        if result < 0:
-            return False
-    return True    
-
-
+#skill: 핵심 스킬
+#skill_trees: 스킬 트리
 
 def solution(skill, skill_trees):
-    
-    skills = skill
-    valid_num = len(skill_trees)
-    
-    # # 버전 1
-    # for item in skill_trees:
-    #     pre_idx = 0
-        
-    #     for skill in skills:
-    #         idx = item.find(skill)
-            
-    #         if idx - pre_idx < 0:
-    #             able_num -= 1
-    #             break
-    #         pre_idx = idx
-    
+    valid_num = len(skill_trees) # 모든 경우의 수
+
     for item in skill_trees:
-        sequence =[]
 
-        for skill in skills:
-            idx = item.find(skill)
-            sequence.append(idx)
+        rest_trees = [x for x in item if x in skill] # 핵심 스킬과 중복되는 스킬_트리만 남김
+        rest_trees = ''.join(rest_trees)    #각 요소를 모두 연결하여 str타입으로 바꿈
 
+        rest_skill = skill[:len(rest_trees)] #핵심 스킬을 남은 스킬트리의 길이와 맞춤
 
+        if rest_skill != rest_trees: #둘이 같지 않으면 경우의 수에서 하나를 제거 한다.
+            valid_num -= 1
 
-
-        if check(sequence) == False:
-            able_num -= 1
-
-
-    answer = able_num
+    answer = valid_num
     return answer
-
-skills = "CBD"
-skill_trees = ["BACDE", "CBADF", "AECB", "BDA"]
-print(solution(skills, skill_trees))
