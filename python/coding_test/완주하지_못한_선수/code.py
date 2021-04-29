@@ -1,9 +1,17 @@
-def solution_1(participant, completion):
+def solution(participant, completion):
     
-    for runner in completion:
-        participant.remove(runner)
-        
-    return participant[0]
-
-
-print(solution_1(["leo", "kiki", "eden"], ["eden", "kiki"]))
+    runners = {}
+    
+    for r in participant:
+        if r not in runners:
+            runners[r] = 1
+        else:
+            runners[r] += 1
+    
+    for c in completion:
+        runners[c] -= 1
+    
+    for key, value in runners.items():
+        if value == 1:
+            return key
+    
