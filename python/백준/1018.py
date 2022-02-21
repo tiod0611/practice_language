@@ -15,8 +15,6 @@ N, M = map(int, input().split(' '))
 
 for _ in range(N):
     row = input()
-    # rowlist = [i for i in row]
-    # row = [1 if x == 'B' else -1 for x in row] # B => 1, W => -1
     array2D.append(row)
 print(array2D)
 for r in range(N-7): # 아래로 8개씩, 1칸씩 이동
