@@ -7,7 +7,7 @@ import torch.optim as optim
 from model import ImageClassifier
 from trainer import Trainer
 from data_loader import get_loaders
-
+ 
 def define_argparser():
     p = argparse.ArgumentParser()
 
@@ -20,14 +20,15 @@ def define_argparser():
     p.add_argument('--n_epochs', type=int, default=20)
     p.add_argument('--verbose', type=int, default=2)
 
-    config = p.parser_arge()
+    config = p.parse_args()
 
     return config
 
 
 def main(config):
     # Set device based on user defined configuration.
-    device = torch.device('cpu') if config.gpu_id < 0 else torch.device('cuda%d' % config.gpu_id)
+    device = torch.device('cpu') if config.gpu_id < 0 else torch.device('cuda:%d' % config.gpu_id)
+
 
     train_loader, valid_loader, test_loader = get_loaders(config)
 
