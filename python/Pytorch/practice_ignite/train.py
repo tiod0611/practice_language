@@ -27,7 +27,8 @@ def define_argparser():
 
 def main(config):
     # Set device based on user defined configuration.
-    device = torch.device('cpu') if config.gpu_id < 0 else torch.device('cuda:%d' % config.gpu_id)
+    # device = torch.device('cpu') if config.gpu_id < 0 else torch.device('cuda:%d' % config.gpu_id)
+    device = torch.device('cuda:%d' % config.gpu_id)
 
 
     train_loader, valid_loader, test_loader = get_loaders(config)

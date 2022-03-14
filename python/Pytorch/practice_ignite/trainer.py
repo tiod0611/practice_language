@@ -89,6 +89,7 @@ class MyEngine(Engine):
 
             else: 
                 accuracy = 0
+
         return {
             'loss' : float(loss),
             'accuracy' : float(accuracy)
@@ -105,7 +106,7 @@ class MyEngine(Engine):
                metric_name,
             )     
         
-        training_metric_names = ['loss', 'accuraccy', '|param|', '|g_param|']
+        training_metric_names = ['loss', 'accuracy', '|param|', '|g_param|']
 
         for metric_name in training_metric_names:
             attach_running_average(train_engine, metric_name)
@@ -113,7 +114,7 @@ class MyEngine(Engine):
         #
         #
         if verbose >= VERBOSE_BATCH_WISE:
-            pbar = ProgressBar(bar_format=None, nclos=120)
+            pbar = ProgressBar(bar_format=None, ncols=120)
             pbar.attach(train_engine, training_metric_names)
     
         #
@@ -150,7 +151,7 @@ class MyEngine(Engine):
 
     @staticmethod
     def check_best(engine):
-        loss = float(engine.state.metric['loss'])
+        loss = float(engine.state.metrics['loss'])
         if loss <= engine.best_loss:
             engine.best_loss = loss
             engine.best_model = deepcopy(engine.model.state_dict())
@@ -188,7 +189,7 @@ class Trainer():
         MyEngine.attach(
             train_engine,
             validation_engine,
-            verbose=self.config.vervose
+            verbose=self.config.verbose
         )
 
         def run_validation(engine, validation_engine, valid_loader):
@@ -206,7 +207,7 @@ class Trainer():
         )
 
         validation_engine.add_event_handler(
-            Events.EPOCHS_COMPLETED, #event
+            Events.EPOCH_COMPLETED, #event
             MyEngine.save_model, #function
             train_engine, self.config, # arguments
         )
