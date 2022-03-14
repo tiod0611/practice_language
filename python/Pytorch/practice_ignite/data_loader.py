@@ -38,7 +38,7 @@ def load_mnist(is_train=True, flatten=True):
     if flatten:
         x = x.view(x.size(0), -1)
 
-        return x, y
+    return x, y
 
 
 def get_loaders(config):
@@ -48,7 +48,7 @@ def get_loaders(config):
     valid_cnt = x.size(0) - train_cnt
 
     # Shuffle dataset to split into train/valid set.
-    indices = torch.ranperm(x.size(0)) # |x| = (60000, 28, 28), 60000만으로 shuffling 진행
+    indices = torch.randperm(x.size(0)) # |x| = (60000, 28, 28), 60000만으로 shuffling 진행
     train_x, valid_x = torch.index_select(
         x,
         dim=0,

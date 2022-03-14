@@ -25,9 +25,9 @@ class ImageClassifier(nn.Module):
             nn.Linear(200, 100),
             nn.LeakyReLU(),
             nn.BatchNorm1d(100),
-            nn.Linear(100, 500),
+            nn.Linear(100, 50),
             nn.LeakyReLU(),
-            nn.BatchNorm1d(500),
+            nn.BatchNorm1d(50),
             nn.Linear(50, output_size),
             nn.Softmax(dim=-1),
         )
