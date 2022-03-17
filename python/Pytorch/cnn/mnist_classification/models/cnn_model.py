@@ -60,7 +60,7 @@ class ConvolutionalClassifier(nn.Module):
         z = self.blocks(x)
         # |z| = (batch_size, 512, 1, 1)
 
-        y = self.layers(z)
+        y = self.layers(z.squeeze()) # (bs, 512, 1, 1) => (bs, 512)
         # |y| = (batch_size, output_size)
 
         return y
