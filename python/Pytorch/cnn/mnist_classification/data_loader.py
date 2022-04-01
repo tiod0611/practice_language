@@ -47,6 +47,8 @@ def get_loaders(config):
     train_cnt = int(x.size(0) * config.train_ratio)
     valid_cnt = x.size(0) - train_cnt
 
+    flatten = True if config.model == 'fc' else False
+
     # Shuffle dataset to split into train/valid set.
     indices = torch.randperm(x.size(0)) # |x| = (60000, 28, 28), 60000만으로 shuffling 진행
     train_x, valid_x = torch.index_select(
@@ -62,19 +64,19 @@ def get_loaders(config):
     ).split([train_cnt, valid_cnt], dim=0)
 
     train_loader = DataLoader(
-        dataset=MnistDataset(train_x, train_y, flatten=True),
+        dataset=MnistDataset(train_x, train_y, flatten=flatten),
         batch_size=config.batch_size,
         shuffle=True                    # train 부분은 반드시 shuffle을 진행해야 함.
     )
     valid_loader = DataLoader(
-        dataset=MnistDataset(valid_x, valid_y, flatten=True),
+        dataset=MnistDataset(valid_x, valid_y, flatten=flatten),
         batch_size=config.batch_size,
         shuffle=True,
     )
 
     test_x, test_y = load_mnist(is_train=False, flatten=False)
     test_loader = DataLoader(
-        dataset=MnistDataset(test_x, test_y, flatten=True),
+        dataset=MnistDataset(test_x, test_y, flatten=flatten),
         batch_size=config.batch_size,
         shuffle=False,
     )

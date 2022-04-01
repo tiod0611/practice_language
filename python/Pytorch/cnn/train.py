@@ -7,7 +7,7 @@ import torch.optim as optim
 from mnist_classification.data_loader import get_loaders
 from mnist_classification.trainer import Trainer
 
-from mnist_classification.models.fc_model import FullyConnctedClassifier
+from mnist_classification.models.fc_model import FullyConnectedClassifier
 from mnist_classification.models.cnn_model import ConvolutionalClassifier
  
 def define_argparser():
@@ -30,7 +30,7 @@ def define_argparser():
 
 def get_model(config):
     if config.model == 'fc':
-        model = FullyConnctedClassifier(28**2, 10)
+        model = FullyConnectedClassifier(28**2, 10)
     elif config.model == 'cnn':
         model = ConvolutionalClassifier(10)
     else:
