@@ -1,1 +1,4 @@
 fastcamp/
+*.tsv
+.*txt
+*.gitignore
