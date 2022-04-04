@@ -1,4 +1,5 @@
 *.pyc
 *.pth
 *.tsv
-.*txt
+*.txt
+*.gitignore
