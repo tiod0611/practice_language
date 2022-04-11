@@ -3,3 +3,4 @@
 *.tsv
 *.txt
 *.gitignore
+chromedriver.exe
