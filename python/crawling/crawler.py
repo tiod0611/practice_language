@@ -1,44 +1,69 @@
 import pandas as pd
+
 import os
 import re
+from datetime import datetime
+import time
 
-import requests
 from bs4 import BeautifulSoup
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-def crawling(id):
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--headless')
+class BookDBUpdater:
 
-    driver = webdriver.Chrome(os.path.join(os.getcwd(), 'chromedriver.exe'), chrome_options=chrome_options)
-    url = "https://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode={}".format(id)
-    driver.get(url)
+    def __init__(self):
+        
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--headless')
+        self.driver = webdriver.Chrome(os.path.join(os.getcwd(), 'chromedriver.exe'), chrome_options=chrome_options)
+        self.metaData = pd.read_csv('UpdaterMetaData.csv')
 
-    title = driver.find_element(by=By.XPATH, value='//*[@id="container"]/div[2]/form/div[1]/h1/strong')
-    sub_title = driver.find_element(by=By.XPATH, value='//*[@id="container"]/div[2]/form/div[1]/h1/span/strong')
-    author = driver.find_elements(by=By.XPATH, value='//*[@id="container"]/div[2]/form/div[1]/div[2]/span[1]')
-    translater = driver.find_elements(by=By.XPATH, value='//*[@id="container"]/div[2]/form/div[1]/div[2]/span[3]')
-    publiser = driver.find_element(by=By.XPATH, value='//*[@id="container"]/div[2]/form/div[1]/div[2]/span[5]/a')
-    date = driver.find_element(by=By.XPATH, value='//*[@id="container"]/div[2]/form/div[1]/div[2]/span[7]')
-    mean_score = driver.find_element(by=By.XPATH, value='//*[@id="container"]/div[2]/form/div[1]/div[3]/div/div/em')
-    isbn_13 = driver.find_element(by=By.XPATH, value='//*[@id="container"]/div[5]/div/div[3]/table/tbody/tr[1]/td/span[1]')
-    isbn_10 = driver.find_element(by=By.XPATH, value='//*[@id="container"]/div[5]/div/div[3]/table/tbody/tr[1]/td/span[2]')
-    category_1 = driver.find_elements(by=By.XPATH, value='//*[@id="container"]/div[5]/div/div[3]/ul/li')
+    def metaDataUpdate(self, column, value):
+        
+        self.metaData[column] = [value]
+        self.metaData.to_csv('UpdaterMetaData.csv', encoding='utf-8', index=False)
 
-    print(title.text)
-    print(sub_title.text)
-    print([x.text for x in author])
-    print([x.text for x in translater])
-    print(publiser.text)
-    print(date.text)
-    print(mean_score.text)
-    print(isbn_13.text)
-    print(isbn_10.text)
-    print([x.text for x in category_1][0].split(' > '))
 
-    driver.close()
+    def getCode(self):
+        # 알라딘 사이트의 도서 분야 코드를 수집
+
+        # 날짜 비교 하는 게 의미가 있을까?
+        # metaData의 CodeUpdate와 비교해서 코드 수행
+        today = time.strptime(datetime.today().strftime("%Y/%m/%d"), "%Y/%m/%d")
+        metaDay = time.strftime(self.metaData['CodeUpdate'][0], "%Y/%m/%d")
+        
+        if today < metaDay:
+            return
+
+        codes = pd.DataFrame(columns=['code', 'name'])
+
+        self.driver.get("https://www.aladin.co.kr/home/wbookmain.aspx")
+        html = self.driver.page_source
+        self.driver.quit()
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        browse_sub_list = soup.select('li.browse_sub > a')
+
+        #extract href and text
+        for li in browse_sub_list:
+            codes = codes.append({'code':li.attrs['href'].split('=')[1], 'name': li.text}, ignore_index=True)
+        
+        #save to csv
+        codes.to_csv('codes.csv', encoding='utf-8', index=False)
+
+        #update metadata 
+        self.metaDataUpdate('CodeUpdate', datetime.today().strftime("%Y/%m/%d"))
+
+    def getBookURL(self, code):
+        # url만 수집? url 타고 들어가서 data 다 수집??? 흠...
+        
+        self.driver.get('')
+
+    
 
 if __name__ == "__main__":
-    crawling("9788960518117")
+
+    getbook = BookDBUpdater()
+    getbook.getCode()
+    
