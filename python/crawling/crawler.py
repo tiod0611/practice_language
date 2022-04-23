@@ -2,7 +2,7 @@ import pandas as pd
 
 import os
 import re
-from datetime import datetime
+from datetime import datetime 
 import time
 
 from bs4 import BeautifulSoup
@@ -14,9 +14,11 @@ class BookDBUpdater:
 
     def __init__(self):
         
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')
-        self.driver = webdriver.Chrome(os.path.join(os.getcwd(), 'chromedriver.exe'), chrome_options=chrome_options)
+        user_agent = "Mozilla/5.0 (Linux; Android 9; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.83 Mobile Safari/537.36"
+        self.chrome_options = webdriver.ChromeOptions()
+        self.chrome_options.add_argument('--headless')
+        self.chrome_options.add_argument('user-agent=' + user_agent)
+        
         self.metaData = pd.read_csv('UpdaterMetaData.csv')
 
     def metaDataUpdate(self, column, value):
@@ -37,10 +39,10 @@ class BookDBUpdater:
             return
 
         codes = pd.DataFrame(columns=['code', 'name'])
-
-        self.driver.get("https://www.aladin.co.kr/home/wbookmain.aspx")
+        driver = webdriver.Chrome(os.path.join(os.getcwd(), 'chromedriver.exe'), chrome_options=self.chrome_options)
+        driver.get("https://www.aladin.co.kr/home/wbookmain.aspx")
         html = self.driver.page_source
-        self.driver.quit()
+        driver.quit()
         soup = BeautifulSoup(html, 'html.parser')
         
         browse_sub_list = soup.select('li.browse_sub > a')
@@ -55,15 +57,33 @@ class BookDBUpdater:
         #update metadata 
         self.metaDataUpdate('CodeUpdate', datetime.today().strftime("%Y/%m/%d"))
 
-    def getBookURL(self, code):
-        # url만 수집? url 타고 들어가서 data 다 수집??? 흠...
-        
-        self.driver.get('')
+    def getBookURL(self): 
+        # url만 수집
+        # 2000년도 이후에 나온 책만 수집하자. 2000년도 아래 년도 책이 등장하면 수집을 멈추고 다음 파트로 넘어간다. 
+        # 수집한 책 정보를 어떻게 남길까? 크롤링 업데이트가 될 때 중복을 피할 방법을 생각해야 해.
+        driver = webdriver.Chrome(os.path.join(os.getcwd(), 'chromedriver.exe'), chrome_options=self.chrome_options)
 
+        df = pd.read_csv('codes.csv')
+        codes=df['code']
+        
+        # 책 발행 연도를 제한하기 위한 코드. 현재부터 제한연도까지 차이만큼 월수를 구함
+        now_year = datetime.now().year 
+        now_month = datetime.now().month
+        diff = (now_month-1) + (now_year-2010) * 12
+
+        for code in codes:
+            page = 0
+            while True : # 원소가 없으면 종료
+                url = f'https://www.aladin.co.kr/shop/wbrowse.aspx?BrowseTarget=List&ViewRowsCount=100&ViewType=Detail&PublishMonth={diff}&SortOrder=5&page={}&Stockstatus=1&CID={code}&SearchOption=&CustReviewRankStart=&CustReviewRankEnd=&CustReviewCountStart=&CustReviewCountEnd=&PriceFilterMin=&PriceFilterMax='
+                driver.get(url)
+                book_list = driver.find_elements(by=By.XPATH, value="//div[@class='ss_book_box']/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div/a")
+                for element in book_list:
+                    print(element.get_attribute('href'))
+                    # url + 발행년도???
+                page += 1
     
 
 if __name__ == "__main__":
 
     getbook = BookDBUpdater()
-    getbook.getCode()
     
