@@ -7,8 +7,12 @@ import time
 
 from bs4 import BeautifulSoup
 
+import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchWindowException
 
 class BookDBUpdater:
 
@@ -16,7 +20,7 @@ class BookDBUpdater:
         
         user_agent = "user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"
         self.chrome_options = webdriver.ChromeOptions()
-        self.chrome_options.add_argument('--headless')
+        # self.chrome_options.add_argument('--headless')
         self.chrome_options.add_argument("--log-level=3")
         self.chrome_options.add_argument('user-agent=' + user_agent)
         
@@ -80,32 +84,51 @@ class BookDBUpdater:
         diff = (now_month-1) + (now_year-2010) * 12
 
         for code in codes:
-            page = 0
+            page = 1
             loop=True
-            while loop : # 원소가 없으면 종료
-                url = f'https://www.aladin.co.kr/shop/wbrowse.aspx?BrowseTarget=List&ViewRowsCount=200&ViewType=Detail&PublishMonth={diff}&SortOrder=5&page={page}&Stockstatus=1&CID={code}&SearchOption=&CustReviewRankStart=&CustReviewRankEnd=&CustReviewCountStart=&CustReviewCountEnd=&PriceFilterMin=&PriceFilterMax='
-                driver.get(url)
-                book_list = driver.find_elements(by=By.XPATH, value="//div[@class='ss_book_box']/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div/a")
-                #date 조건 추가해야함. 
-                # date_list = driver.find_elements(by=By.XPATH, value='//div[@class="ss_book_box"]/table/tbody/tr/td[3]/table/tbody/tr[1]/td[1]/div[1]/ul/li[2]')
-                if len(book_list) >0 :
-                    idx = 0
-                    for url, date in zip(book_list, date_list): # url과 date 정보를 dataframe에 추가한다.
-                        # date = re.sub('년 ','-', date.text.split(' | ')[-1].rstrip('월'))
-                        # date = re.sub('[^0-9\-]', '', date)
-                        url = url.get_attribute('href')
-                        urls = urls.append({'code': code, 'url': url, 'date': ''}, ignore_index=True)
-                        # urls = urls.append({'code': code, 'url': url, 'date': date}, ignore_index=True)
-                        # print(element.get_attribute('href'))
-                        idx += 1  
-                
-                    page += 1
+            print("Now: ", code)
+            while loop : # 원소가 없으면 종료 => 페이지 끝 번호를 찾아서 반복문이 돌도록 해야함. 지금 방법은 시간이 너무 오래 걸림
+                try:
+                    print("    page: ", page)
+                    url = f'https://www.aladin.co.kr/shop/wbrowse.aspx?BrowseTarget=List&ViewRowsCount=200&ViewType=Detail&PublishMonth={diff}&SortOrder=5&page={page}&Stockstatus=1&CID={code}&SearchOption=&CustReviewRankStart=&CustReviewRankEnd=&CustReviewCountStart=&CustReviewCountEnd=&PriceFilterMin=&PriceFilterMax='
+                    driver.get(url)
+                    
+                    driver.implicitly_wait(10) # seconds
+                    book_list = driver.find_elements(by=By.XPATH, value="//div[@class='ss_book_box']/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div/a")
+                    # book_list = WebDriverWait(driver, 3).until(
+                    #     EC.presence_of_elments_located(by=By.XPATH, value="//div[@class='ss_book_box']/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div/a")
+                    # )
+            
+                    if len(book_list) >0 :
+                        idx = 0
+                        for url in book_list: # url과 date 정보를 dataframe에 추가한다.
+                            url = url.get_attribute('href')
+                            if url not in urls['url']:
+                                urls = urls.append({'code': code, 'url': url, 'date': ''}, ignore_index=True)
+                            # print(element.get_attribute('href'))
+                            idx += 1  
 
-                else:
-                    loop = False
+                        # for url, date in zip(book_list, date_list): # url과 date 정보를 dataframe에 추가한다.
+                        #     date = re.sub('년 ','-', date.text.split(' | ')[-1].rstrip('월'))
+                        #     date = re.sub('[^0-9\-]', '', date)
+                        #     url = url.get_attribute('href')
+                        #     urls = urls.append({'code': code, 'url': url, 'date': date}, ignore_index=True)
+                        #     # print(element.get_attribute('href'))
+                        #     idx += 1  
+
+                        page += 1
+                        
+
+                    else:
+                        loop = False
                 
-                #dataframe 저장
-                urls.to_csv('urls.csv', encoding='utf-8', index=False)
+                    #dataframe 저장
+                    urls.to_csv('urls.csv', encoding='utf-8', index=False)
+                
+                except selenium.common.exceptions.TimeoutException or NoSuchWindowException:
+                    print("TimeOut!")
+
+
         driver.quit()
 
 if __name__ == "__main__":
