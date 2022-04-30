@@ -35,8 +35,8 @@ class BookDBUpdater:
         
         user_agent = "user-agent=Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"
         self.chrome_options = webdriver.ChromeOptions()
-        # self.chrome_options.add_argument('--headless')
-        self.chrome_options.add_argument("--log-level=3")
+        self.chrome_options.add_argument('--headless') #selenium 작동시 웹 페이지를 작동하지 않음
+        self.chrome_options.add_argument("--log-level=3") #log를 남가지 않음
         self.chrome_options.add_argument('user-agent=' + user_agent)
         
         
@@ -138,14 +138,38 @@ class BookDBUpdater:
 
         driver.quit()
 
-    def getBookInfo():
-        bookinfo = pd.DataFrame(columns= ['isbn13', 'title', 'sub-title', 'authors', 'translator', 'publisher', 'date', 'original_title', 'price', 'pages'])
-        pass
+    def getBookInfo(self):
+        
+        driver = webdriver.Chrome(os.path.join(os.getcwd(), 'chromedriver'), chrome_options=self.chrome_options)
 
+        urls = pd.read_csv('urls.csv', 'r')
+        bookinfo = pd.DataFrame(columns= ['isbn13', 'title', 'sub-title', 'authors', 'translator', 'publisher', 'date', 'original_title', 'price', 'pages'])
+        
+        for url in urls:
+            driver.get(url)
+            #title
+            title = driver.find_element(by=By.XPATH, value='//*[@id="Ere_prod_allwrap"]/div[3]/div[2]/div[1]/div/ul/li[2]/div/a[1]').text
+            #sub_title
+            sub_title=driver.find_elements(by=By.XPATH, value='//*[@id="Ere_prod_allwrap"]/div[3]/div[2]/div[1]/div/ul/li[2]/div/span')
+            sub_title = sub_title[0].text if sub_title else None
+            #isbn
+            #page
+            #categories
+            #introduction
+            
+            #author, translator, publisher, date, original_title, keyword => 교보에 접근해서 수집
+
+
+
+
+            
 
 class ReviewUpdator():
     def __init__():
         pass
+
+
+
 
 
 if __name__ == "__main__":
