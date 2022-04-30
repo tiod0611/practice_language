@@ -152,17 +152,24 @@ class BookDBUpdater:
             #sub_title
             sub_title=driver.find_elements(by=By.XPATH, value='//*[@id="Ere_prod_allwrap"]/div[3]/div[2]/div[1]/div/ul/li[2]/div/span')
             sub_title = sub_title[0].text if sub_title else None
-            #isbn
-            #page
+            #isbn 
+            isbn = driver.find_elements(by=By.XPATH , value='//*[@id="Ere_prod_allwrap"]/div[9]/div[1]/div[3]/div[1]/ul/li')
+            isbn = isbn[-1].text.split(' : ')[-1]            
             #categories
+            categories = driver.find_elements(by=By.XPATH, value='//*[@id="ulCategory"]/li')
+            categories = [category.text.split(' > ')[-1] for category in categories]
             #introduction
             
-            #author, translator, publisher, date, original_title, keyword => 교보에 접근해서 수집
+            # 아래 정보는 교보문고를 통해 수집
+            #author, translator, publisher, date, original_title, keyword, page
+            kyobo_url = f'http://www.kyobobook.co.kr/product/detailViewKor.laf?mallGb=KOR&ejkGb=KOR&barcode={isbn}'
+            driver.get(kyobo_url)
+
+            #get author+author_code, translator+translator_code, publisher, date
+            # info = driver.find_elements(by=By.XPATH, value='//*[@id="container"]/div[2]/form/div[1]/div[@class="author"]')
+            # info = info[0].text.split(' | ')
 
 
-
-
-            
 
 class ReviewUpdator():
     def __init__():
