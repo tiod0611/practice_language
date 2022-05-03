@@ -110,13 +110,22 @@ class BookDBUpdater:
                     self.driver.get(url)
                     self.driver.implicitly_wait(2) #페이지가 열릴 때 까지 2초를 기다림.
                     book_list = self.driver.find_elements(by=By.XPATH, value="//div[@class='ss_book_box']/table/tbody/tr/td[2]/table/tbody/tr[1]/td/div/a")
-                
+                    book_dates = self.driver.find_elements(by=By.XPATH, value='//div[@class="ss_book_list"]/ul')
+
                     if len(book_list) >0 :
-                        for url in book_list: 
+                        for url, book_date in zip(book_list, book_dates): 
                             # book list를 돌면서 url을 수집한뒤 getBookInfo에 보냄
                             url = url.get_attribute('href')
+                            # 현재 책의 출간 날짜를 구함.
+                            book_date = re.findall("[0-9]{4}년 [0-9]{1,2}월", book_date)[0]
+                            book_date = re.sub('년','.', book_date).rstrip('월')
+
+                            #book_date와 config 날짜를 비교해서 더 과거면 continue
+
                             info = self.getBookInfo(url)
                             booksinfo.loc[len(booksinfo)] = info
+                            
+                            config[code] = book_date
 
                     #진행 사항을 보여주는 progress bar
                     printProgress(page, end_num, 'Progress:', 'Complete', 1, 50)
@@ -168,8 +177,5 @@ class ReviewUpdator():
 
 
 if __name__ == "__main__":
-    with open('config.json', 'r') as f:
-        config = json.load(f)
-        updateDate = config['lastDate']
     getbook = BookDBUpdater()
     getbook.getBookURL()
