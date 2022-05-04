@@ -80,7 +80,17 @@ class BookDBUpdater:
         names=df['name']
 
         for code, name in zip(codes, names):
+<<<<<<< HEAD
+
+            print(f"Now=> {name} : {code}")
+            url = f'https://www.aladin.co.kr/shop/wbrowse.aspx?BrowseTarget=List&ViewRowsCount=100&ViewType=Detail&PublishMonth={diff}&SortOrder=5&page=1&Stockstatus=1&CID={code}&SearchOption=&CustReviewRankStart=&CustReviewRankEnd=&CustReviewCountStart=&CustReviewCountEnd=&PriceFilterMin=&PriceFilterMax='
+            driver.get(url)
+            end_num = driver.find_element(by=By.XPATH, value='//*[@id="short"]/div[12]/a')
+            end_num.get_attribute('href')
+            end_num = int(re.sub('[^0-9]', '', end_num.get_attribute('href')))
+=======
             # category code를 순회하며 데이터를 수집함
+>>>>>>> ff4c5d91946137745d0a65fba8353be40f2c7413
 
             print(f"Now=> {name} : {code}")
             
