@@ -1,3 +1,4 @@
+from lib2to3.pgen2.pgen import PgenGrammar
 import os
 import requests
 import shutil # 파일과 관련된 고수준 연산을 제공. 특히, 파일 복사와 삭제를 지원하는 함수 제공
@@ -62,4 +63,36 @@ class AutoCrawler:
         self.proxy_list = proxy_list if proxy_list and len(proxy_list) > 0 else None # 한개 이상의 원소가 있는 경우에만
 
         os.makedirs('./{}'.format(self.download_path), exist_ok=True) # eist_ok 해당 dir이 있으면 생성 없으면 지나감
+    
+    @staticmethod
+    def all_files(path):
+        paths = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if os.path.isfile(path + '/' + file):
+                    paths.append(path + '/' + file)
         
+        return paths
+
+    @staticmethod
+    def get_extension_from_link(link, default='jpg'):
+        splits = str(link).split('.')
+        if len(splits) == 0:
+            return default
+        ext = splits[-1].lower()
+        if ext == 'jpg' or ext == 'jpeg':
+            return 'jpg'
+        elif ext == 'gif':
+            return 'gif'
+        elif ext == 'png':
+            return 'png'
+        else:
+            return default
+
+    @staticmethod
+    def make_dir(dirname):
+        current_path = os.getcwd()
+        path = os.path.join(current_path, dirname)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
