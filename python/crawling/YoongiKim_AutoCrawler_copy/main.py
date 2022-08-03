@@ -96,3 +96,95 @@ class AutoCrawler:
         if not os.path.exists(path):
             os.makedirs(path)
 
+    @staticmethod
+    def get_keywords(keywords_file='keywords.txt'):
+        # 파일에서 검색 키워드 읽기
+        with open(keywords_file, 'r', encoding='utf-8-sig') as f:
+            # utf-8-sig는 기존 utf-8에서 BOM을 출력할 때 문제가 발생하기 때문에 이를 회피하는 방법이다.
+            # BOM을 제거하고 출력한다.
+            text = f.read()
+            lines = text.split('\n')
+            lines = filter(lambda x: x !='' and x is not None, lines) # lines가 없는 경우가 아닐 때
+            keywords = sorted(set(lines))
+
+        print('{} keywords found: {}'.format(len(keywords), keywords))
+
+        # re-save sorted keywords
+        with open(keywords_file, 'w+', encoding='utf-8') as f:
+            # w+ vs w : w는 쓰기 전용, w+는 읽고 쓰기
+            for keyword in keywords:
+                f.write('{}\n'.format(keyword)) 
+        
+        return keywords
+    
+    @staticmethod
+    def save_object_to_file(object, file_path, is_base64=False):
+        try:
+            with open('{}'.format(file_path), 'wb') as file:
+                if is_base64:
+                    file.write(object)
+                else:
+                    shutil.copyfileobj(object.raw, file)
+        
+        except Exception as e:
+            print('Save failed - {}'.format(e))
+
+    @staticmethod
+    def base64_to_object(src):
+        header, encodered = str(src).split(',', 1)
+        data = base64.decodebytes(bytes(encoded, encoding='utf-8'))
+        return data
+
+    def download_image(self, keyword, links, site_name, max_count=0):
+        self.make_dir('{}/{}'.format(self.download_path, keyword.replace('"', '')))
+        total = len(links)
+        success_count = 0
+
+        if max_count == 0: # 무한대로 다운 받게 설정했다면
+            max_count = total
+        
+        for index, link in enumerate(links):
+            if success_count >= max_count:
+                break
+
+            try:
+                print('Downloading {} from {}: {} / {}'.format(keyword, site_name, success_count + 1, max_count))
+
+                if str(link).startswith('data:image/jpeg;base64'): # 문자열이 다음으로 시작한다면 => Bool
+                    response = self.base64_to_object(link)
+                    ext = 'jpg'
+                    is_base64 = True
+
+                elif str(link).startswith('data:image/png;base64'):
+                    response = self.base64_to_object(link)
+                    ext = 'png'
+                    is_base64 = True
+                else:
+                    response = requests.get(link, stream=True)
+                    ext = self.get_extension_from_link(link)
+                    is_base64 = False
+                
+                no_ext_path = '{}/{}/{}_{}'.format(self.download_path.replace('"', ''), keyword, site_name,
+                                                    str(index).zfill(4))
+
+                path = no_ext_path + '.' + ext
+                self.save_object_to_file(response, path, is_base64=is_base64)
+
+                success_count += 1
+                del response
+
+                ext2 = self.validate_image(path)
+                
+                if ext2 is None:
+                    print('Unreadable file - {}'.format(link))
+                    os.remove(path)
+                    success_count -= 1
+                else:
+                    if ext != ext2:
+                        path2 = no_ext_path + '.' + ext2
+                        os.rename(path, path2)
+                        print('Renamed extension {} -> {}'.format(ext, ext2))
+
+            except Exception as e:
+                print('Download failed - ', e)
+                continue
