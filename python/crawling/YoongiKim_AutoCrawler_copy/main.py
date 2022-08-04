@@ -188,3 +188,45 @@ class AutoCrawler:
             except Exception as e:
                 print('Download failed - ', e)
                 continue
+    
+    def download_from_site(self, keyword, site_code):
+        site_name = Sites.get_text(site_code)
+        add_url = Sites.get_face_url(site_code) if self.face else ""
+
+        try:
+            proxy = None
+            if self.proxy_list:
+                proxy = random.choice(self.proxy_list)
+            
+            collect = CollectLinks(no_gui=self.no_gui, proxy=proxy) # 크롬 드라이버 초기화
+        except Exception as e:
+            print("Error occurred while initializing chromedriver - {}".format(e))
+            return
+        
+        try:
+            print('Collecting links... {} from {}'.format(keyword, site_name))
+            
+            if site_code == Sites.GOOGLE:
+                links = collect.google(keyword, add_url)
+            elif site_code == Sites.NAVER:
+                links = collect.naver(keyword, add_url)
+            elif site_code == Sites.GOOGLE_FULL:
+                links = collect.google_full(keyword, add_url)
+            elif site_code == Sites.NAVER_FULL:
+                links = collect.naver_full(keyword, add_url)
+            else:
+                print("Invalid site code")
+                links = []
+            
+            print('Downloading images from collected links... {} from {}'.format(keyword, site_name))
+            self.download_image(keyword, links, site_name, max_count=self.limit)
+            Path('{}/{}/{}_done'.format(self.download_path, keyword.replace('"',''), site_name)).touch()
+
+            print('Done {} : {}'.format(site_name, keyword))
+
+        except Exception as e:
+            print("Exception {}:{} - {}".format(site_name, keyword, e))
+
+    def download(self, args):
+        self.download_from_site(keyword=args[0], site_code=args[1])
+    
