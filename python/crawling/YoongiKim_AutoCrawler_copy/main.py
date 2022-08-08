@@ -229,4 +229,94 @@ class AutoCrawler:
 
     def download(self, args):
         self.download_from_site(keyword=args[0], site_code=args[1])
+
+    def do_crawling(self):
+        keywords = self.get_keywords()
+
+        tasks = []
+
+        for keyword in keywords:
+            dir_name = '{}/{}'.format(self.downloadpath, keyword)
+            google_done = os.path.exists(os.path.join(os.getcwd(), dir_name, 'google_done'))
+            naver_done = os.path.exists(os.path.join(os.getcwd(), dir_name, 'naver_done'))
+
+            if google_done and naver_done and self.skip:
+                print("Skipping done task {}".format(dir_name))
+                continue
+
+            if self.do_google and not google_done:
+                if self.full_resolution:
+                    tasks.append([keyword, Sites.GOOGLE_FULL])
+                else:
+                    tasks.append([keyword, Sites.GOOGLE])
+
+            if self.do_naver and not naver_done:
+                if self.full_resolution:
+                    tasks.append([keyword, Sites.NAVER_FULL])
+                else:
+                    tasks.append([keyword, Sites.NAVER])
+
+        pool = Pool(self.n_threads)
+        pool.map_async(self.download, tasks)
+        pool.close()
+        pool.join()
+        print('Task ended. Pool join')
+
+        self.imbalance_check()
+        print('End Program')
+
+    
+    def imbalance_check(self):
+        print('Data imbalance checking...')
+
+        dict_num_files = {}
+
+        for dir in self.all_dirs(self.download_path):
+            n_files = len(self.all_files(dir))
+            dict_num_files[dir] = n_files
+
+        avg = 0
+        for dir, n_files in dict_num_files.items():
+            avg += n_files / len(dict_num_files)
+            print('dir: {}, file_count: {}'.format(dir, n_files))
+
+        dict_too_small = {}
+
+        for dir, n_files in dict_num_files.items():
+            if n_files < avg * 0.5:
+                dict_too_small[dir] = n_files
+
+        if len(dict_too_small) >= 1:
+            print('Data imbalance detected.')
+            print('Below keywords have smaller than 50% of average file count.')
+            print('I recommend you to remove these directories and re-download for that keywords.')
+            print(' _______________________________ ')
+            print('Tool small file count directories:')
+            
+            for dir, n_files in dict_too_small.items():
+                print('dir: {}, file_count: {}'.format(dir, n_files))
+
+            print("Remove directories above? (y/n)")
+            answer = input()
+
+            if answer == 'y' or answer == 'Y':
+                # 너무 작은 파일의 디렉토리는 삭제
+                print('Removing too small file count directories...')
+
+                for dir, n_files in dict_too_small.items():
+                    shutil.rmtree(dir)
+                    print('Removed {}'.format(dir))
+
+                print('Now re-run this program to re-download removed files. (with skip_already_exist=True)')
+        
+        else:
+            print('Data imbalance not detected.')
+
+
+if __name__ == '__main__':
+    pass
+
+
+
+
     
