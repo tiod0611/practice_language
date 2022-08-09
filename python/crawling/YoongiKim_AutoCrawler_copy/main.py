@@ -314,9 +314,49 @@ class AutoCrawler:
 
 
 if __name__ == '__main__':
-    pass
+    parser = argparse.ArgumentParser()
 
+    parser.add_argument('--skip', type=str, default='true', hekp = '이미 다운로드 됐다면, 키워드를 스킵함. 재다운로드 시 필요함')
+    parser.add_argument('--threads', type=int, default=4, help='다운로드 할 쓰레드의 수')
+    parser.add_argument('--google', type=str, default='true', help='구글에서 다운로드')
+    parser.add_argument('--naver', type=str, default='true', help='네이버에서 다운로드')
+    parser.add_argument('--full', type=str, default='false',
+                        help='썸네일 이미지를 다운로드 하는 대신에 최대 해상도로 다운로드 함(느림)')
+    parser.add_argument('--face', type=str, default='false', help='페이스 서치 모드')              
+    parser.add_argument('--no_gui', type=str, default='auto', 
+                        help='No GUI 모드. full resolution 모드 가속화. \
+                            하지만 thumbnail 모드에서는 불안정함')
+    parser.add_argument('--limit', type=int, default='', help='콤마로 분리된 proxy 리스트\
+                        모든 thread는 랜덤하게 선택된다.')
+    args = parser.parse_args()
 
+    _skip = False if str(args.skip).lower() == 'false' else True
+    _thread = args.threads
+    _google = False if str(args.google).lower() == 'false' else True
+    _naver = False if str(args.naver).lower() == 'false' else True
+    _full = False if str(args.full).lower() == 'false' else True
+    
+    _face = False if str(args.face).lower() == 'false' else True
+    _limit = int(args.limit)
+    _proxy_list = args.proxy_list.split(',')
+
+    no_gui_input = str(args.no_gui).lower()
+    if no_gui_input == 'auto':
+        _no_gui = _full
+    elif no_gui_input == 'true':
+        _no_gui = True
+    else:
+        _no_gui = False
+
+    print('Options - skip:{}, thread:{}, google: {}, naver:{},\
+        full_resolution:{}, face:{}, no_gui:{}, limit:{}, _proxy_list:{}'.format(
+            _skip, _thread, _google, _naver, _full, _face, _no_gui, _limit, _proxy_list))
+    
+    crawler = AutoCrawler(skip_already_exist=_skip, n_threads=_thread,
+                        do_google=_google, do_naver=_naver, full_resolution=_full, face=_face, no_gui=_no_gui,
+                        limit=_limit, proxy_list=_proxy_list)
+    crawler.do_crawling()
+                
 
 
     
