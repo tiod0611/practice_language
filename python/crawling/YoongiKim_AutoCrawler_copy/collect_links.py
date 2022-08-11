@@ -67,5 +67,78 @@ class CollectLinks:
         pos = self.browser.execute_script("return window.pageYOffset;")
         return pos
     
-    def wait_and_clict(self, xpath):
+    def wait_and_click(self, xpath):
+        # 가끔 이유 없이 클릭이 실패할 때, 어떻게든 클릭을 시도함
+        try:
+            w = WebDriverWait(self.browser, 15)
+            elem = w.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+            elem.click()
+            self.highlight(elem)
+        except Exception as e:
+            print('Click time out - {}'.format(xpath))
+            print('Refreshing browser...')
+            self.browser.refresh()
+            time.sleep(2)
+            return self.wait_and_click(xpath)
+        
+        return elem
+    
+    def highlight(self, element):
+        self.browser.execute_script("arguments[0].setAttributie('style', arguments[1];", element, 
+                                    "backgroud: yellow; border: 2px solid red;")
+    
+    @staticmethod
+    def remove_duplicates(_list):
+        return list(dict.fromkeys(_list))
+
+    def google(self, keyword, add_url=""):
+        self.browser.get("https://www.google.com/search?q={}&source=lnms&tbm=isch{}".format(keyword, add_url))
+
+        time.sleep(1)
+
+        print('Scrolling down')
+
+        elem = self.browser.find_element(By.TAG_NAME, 'body')
+
+        for i in range(60):
+            elem.send_keys(Keys.PAGE_DOWN)
+            time.sleep(0.2)
+
+        try:
+            self.wait_and_click('//input[@type="button"]')
+
+            for i in range(60):
+                elem.send_keys(Keys.PAGE_DOWN)
+                time.sleep(0.2)
+
+        except ElementNotVisibleException:
+            pass
+
+        photo_grid_boxes = self.browser.find_elements(By.XPATH, '//div[@class="bRMDJf islir"]')
+
+        print('Scriping links')
+
+        links = []
+
+        for box in photo_grid_boxes:
+            try:
+                imgs = box.find_elements(By.TAG_NAME, 'img')
+
+                for img in imgs:
+                    src = img.get_attribute('src')
+
+                    if str(src).startswith('data'):
+                        src = img.get_attribute("data-iurl")
+                    links.append(src)
+
+            except Exception as e:
+                print('[Exception occurred while collecting links from google {}'.format(e))
+
+        links = self.remove_duplicates(links)
+        print('Collect links done. Site: {}, Keyword: {}, Total: {}'.format('google', keyword, len(links)))
+        self.browser.close()
+
+        return links
+
+    def naver(self, keyword, add_url=""):
         pass
