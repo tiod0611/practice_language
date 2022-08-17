@@ -175,4 +175,77 @@ class CollectLinks:
 
         return links
 
-        
+    def google_full(self, keyword, add_url=""):
+        print('[Full Resolution Mode]')
+
+        self.browser.get("https://www.google.com/search?q={}&tbm=isch{}".format(keyword, add_url))
+        time.sleep(1)
+
+        elem = self.browser.find_element(By.TAG_NAME, "body")
+
+        print('Scroaping links')
+
+        self.wait_and_click('//div[@data-ri="0"]') 
+        time.sleep(1)
+
+        links = []
+        count = 1
+
+        last_scroll = 0
+        scroll_patience = 0
+
+        while True:
+            try:
+                xpath = '//div[@id="islsp"]//div[@class="v4dQwb"]'
+                div_box = self.browser.find_element(By.XPATH, xpath)
+                self.highlight(img)
+
+                xpath = '//img[@class="n3VNCb"]'
+                img = div_box.find_element(By.XPATH, xpath)
+                self.highlight
+
+                xpath = '//div[@class="k7Osd"]'
+                loading_bar = div_box.find_element(By.XPATH, xpath)
+
+                # 이미지가 로드될 때까지 기다림. 만약 안된다면 base64 code가 보여짐
+                while str(loading_bar.get_attribute('style')) != 'display: none;':
+                    time.sleep(0.1)
+
+                src = img.get_attribute('src')
+
+                if src is not None:
+                    links.append(src)
+                    print('%d: %s' %(count, src))
+                    count += 1
+
+            
+            except StaleElementReferenceException:
+                pass
+            except Exception as e:
+                print('[Exception occured while collecting links from google_full] {}'.format(e))
+
+
+            scroll = self.get_scroll()
+            if scroll == last_scroll:
+                scroll_patience += 1
+
+            else:
+                scroll_patience = 0
+                last_scroll = scroll
+
+            if scroll_patience >= 30:
+                break
+
+            elem.send_keys(Keys.RIGHT)
+
+        links = self.remove_duplicates(links)
+
+        print('Collect links done. Site: {}, Keyword: {}, Total: {}'.format('google_full', keyword, len(links)))
+
+        self.browser.close()
+
+        return links
+
+    def naver_full(self, keyword, add_url=""):
+        pass
+            
