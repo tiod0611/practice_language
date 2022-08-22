@@ -1,3 +1,4 @@
+from shutil import ExecError
 from telnetlib import EC
 import time
 from selenium import webdriver
@@ -247,5 +248,64 @@ class CollectLinks:
         return links
 
     def naver_full(self, keyword, add_url=""):
-        pass
-            
+        print('[Full Resolution Mode]')
+
+        self.browser.get("https://search.naver.com/search.naver?where=image&sm=tab_jum&query={}{}".format(keyword, add_url))
+        time.sleep(1)
+
+        elem = self.browser.find_element(By.TAG_NAME, "body")
+
+        print('Scraping links')
+
+        self.wait_and_click('//div[@class="photo_bx api_ani_send _photoBox"]')
+        time.sleep(1)
+
+        links = []
+        count = 1
+
+        last_scroll = 0
+        scroll_patience = 0
+
+        while True:
+            try:
+                xpath = '//div[@class="image _imageBox"]/img[@class="_image"]'
+                imgs = self.browser.find_elements(By.XPATH, xpath)
+
+                for img in imgs:
+                    self.highlight(img)
+                    src = img.get_attribute('src')
+
+                    if src not in links and src is not None:
+                        links.append(src)
+                        print('%d: %s' % (count, src))
+                        count += 1
+
+            except StaleElementReferenceException:
+                pass
+            except ExecError as e:
+                print('[Exception occurrd while collecting links from naver_full] {}'.format(e))
+
+            scroll = self.get_scroll()
+            if scroll == last_scroll:
+                scroll_patience += 1
+            else:
+                scroll_patience = 0
+                last_scroll = scroll
+
+            if scroll_patience >= 100:
+                break
+
+            elem.send_keys(Keys.RIGHT)
+            elem.send_keys(Keys.PAGE_DOWN)
+
+        links = self.remove_duplicates(links)
+
+        print('Collect links done. Site: {}, Keyword: {}, Total: {}'.format('naver_full', keyword, len(links)))
+        self.browser.close()
+
+        return links
+
+if __name__ == '__main__':
+    collect = CollectLinks()
+    links = collect.naver_full('박보영')
+    print(len(links), links)
