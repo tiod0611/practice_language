@@ -1,6 +1,7 @@
 *.pyc
 *.pth
 *.tsv
+*.csv
 *.txt
 *.gitignore
 chromedriver.exe
