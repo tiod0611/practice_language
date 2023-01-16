@@ -6,4 +6,6 @@
 *.gitignore
 chromedriver.exe
 .Rproj.user
+
 /data
+/.vscode
