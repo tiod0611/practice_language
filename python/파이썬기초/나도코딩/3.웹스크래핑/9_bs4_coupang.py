@@ -1,4 +1,4 @@
-# 페이지 순회하며 저장이 잘 안됨. 수정해야함
+# 쿠팡에서 특정 키워드로 검색된 결과물에 대해 이름, 가격, 평점을 수집하는 크롤러
 
 import requests
 import re
@@ -14,61 +14,93 @@ warnings.filterwarnings(action='ignore')
 # 오류 위치를 출력하는 모듈
 import traceback
 
-# 브라우저 헤더 설정
-# userAgent = generate_user_agent(os='win', device_type="desktop")
-# print(userAgent)
-userAgent="Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.3; Trident/4.0)"
-headers = {"User-Agent":userAgent,
-           "Accept-Language":"ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3"}
+
+# rquests와 BeautifulSoup 실행
+def getReqeustsAndParsing(pageNum, headers):
+    url = f"https://www.coupang.com/np/search?q=%EB%85%B8%ED%8A%B8%EB%B6%81&channel=user&component=&eventCategory=SRP&trcid=&traid=&sorter=scoreDesc&minPrice=&maxPrice=&priceRange=&filterType=&listSize=72&filter=&isPriceRange=false&brand=&offerCondition=&rating=0&page={pageNum}&rocketAll=false&searchIndexingToken=1=6&backgroundColor="
+    res = requests.get(url, headers=headers)
+    res.raise_for_status() # 응답 없을 시 종료
+    print("page: {} 진행 중..".format(pageNum))
+
+    return bs(res.text, "lxml")
+
+
+def getLastPageNum(soup):
+    
+    lastPage = soup.find("a", attrs={"class":"btn-last disabled"}).get_text()
+    return int(lastPage)
 
 
 # 페이지를 순회하며 크롤링
-pageNum = 1
-while pageNum < 10:
+def getItemInfo(soup, itemInfo):
     try:
-        # url에 {}로 page번호 증가
-        url = f"https://www.coupang.com/np/search?q=%EB%85%B8%ED%8A%B8%EB%B6%81&channel=user&component=&eventCategory=SRP&trcid=&traid=&sorter=scoreDesc&minPrice=&maxPrice=&priceRange=&filterType=&listSize=36&filter=&isPriceRange=false&brand=&offerCondition=&rating=0&page={pageNum}&rocketAll=false&searchIndexingToken=1=6&backgroundColor="
-        pageNum += 1
-
-        # 웹페이지 요청
-        res = requests.get(url, headers=headers)
-        res.raise_for_status() # 응답 없을 시 종료
-
-
-        soup = bs(res.text, "lxml")
         items = soup.find_all("li", attrs={"class":re.compile("^search-product")})
-
-        # DF 만들기
-        itemInfo = pd.DataFrame(columns=["name", "price", "rate", "rating_count"]) 
-        
-        # soup 요소를 순회하며 필요한 정보 저장
         for item in items:
-            name = item.find("img", attrs={"class":"search-product-wrap-img"})['alt']
-            price = item.find("strong", attrs={"class":"price-value"})
-            if price: # price 값이 있으면
-                price = price.get_text()
-                price = int(price.replace(",","")) # str에서 ,를 모두 제거하고 int로 변경
-            else:
-                price = None
-            
-            rate = item.find("span", attrs={"class":"star"})  
-            if rate: # rate 값이 있으면
-                rate = float(rate.get_text())
-                rating_count = item.find("span", attrs={"class":"rating-total-count"}).get_text()
-                rating_count = rating_count.lstrip("(").rstrip(")")
-                rating_count = int(rating_count)
-            else:
-                rate = None
-                rating_count = None
+                name = item.find("img", attrs={"class":"search-product-wrap-img"})['alt']
+                price = item.find("strong", attrs={"class":"price-value"})
+                if price: # price 값이 있으면
+                    price = price.get_text()
+                    price = int(price.replace(",","")) # str에서 ,를 모두 제거하고 int로 변경
+                else:
+                    price = None
+                
+                rate = item.find("span", attrs={"class":"star"})  
+                if rate: # rate 값이 있으면
+                    rate = float(rate.get_text())
+                    rating_count = item.find("span", attrs={"class":"rating-total-count"}).get_text()
+                    rating_count = rating_count.lstrip("(").rstrip(")")
+                    rating_count = int(rating_count)
+                else:
+                    rate = None
+                    rating_count = None
 
-            # DF에 새로운 행으로 데이터 저장
-            itemInfo.loc[len(itemInfo)] = [name, price, rate, rating_count]
-            
+                # DF에 새로운 행으로 데이터 저장
+                itemInfo.loc[len(itemInfo)] = [name, price, rate, rating_count]
+        
+        return itemInfo
+
     except Exception as e:
-        print(traceback.format_exc())
-        continue
+        # print(traceback.format_exc())
+        print(e)
+        pass
+
 
 # 저장
-itemInfo.to_csv("노트북 자료.tsv", mode='w', encoding='utf-8', sep="\t", index=False)
+def saveToTsv(name, itemInfo):
+    itemInfo.to_csv(f"{name} 자료.tsv", mode='w', encoding='utf-8', sep="\t", index=False)
 
 
+
+if __name__ == "__main__":
+
+    # DF 만들기
+    itemInfo = pd.DataFrame(columns=["name", "price", "rate", "rating_count"])
+   
+    # 초기값 설정
+    pageNum = 1
+    # keyword = input()
+    name = "노트북"
+
+    # 브라우저 헤더 설정
+    # userAgent = generate_user_agent(os='win', device_type="desktop")
+    # print(userAgent)
+    userAgent="Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.3; Trident/4.0)"
+    headers = {"User-Agent":userAgent,
+            "Accept-Language":"ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3"}
+
+    # 페이지 마지막 번호 알아내기
+
+    soup = getReqeustsAndParsing(pageNum, headers)
+    
+    lastPage = getLastPageNum(soup)
+    itemInfo = getItemInfo(soup, itemInfo)
+    
+    for pageNum in range(2, lastPage+1):
+        soup = getReqeustsAndParsing(pageNum, headers)
+        itemInfo = getItemInfo(soup, itemInfo)
+
+    
+    saveToTsv(name, itemInfo)
+    
+
+    
