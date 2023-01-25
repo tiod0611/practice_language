@@ -1,4 +1,7 @@
-# 쿠팡에서 특정 키워드로 검색된 결과물에 대해 이름, 가격, 평점을 수집하는 크롤러
+# v.0.1 쿠팡에서 특정 키워드로 검색된 결과물에 대해 이름, 가격, 평점을 수집하는 크롤러
+# v.0.2 품절된 제품은 수집 제외
+
+
 
 import requests
 import re
@@ -30,12 +33,27 @@ def getLastPageNum(soup):
     lastPage = soup.find("a", attrs={"class":"btn-last disabled"}).get_text()
     return int(lastPage)
 
+# 특정 키워드가 포함된 행 제거
+def removeKeywordRow(keyword, itemInfo):
+    pass
+
+
+
+
 
 # 페이지를 순회하며 크롤링
-def getItemInfo(soup, itemInfo):
+def getItemInfo(soup, itemInfo, sort = True):
     try:
         items = soup.find_all("li", attrs={"class":re.compile("^search-product")})
         for item in items:
+
+                # 품절된 제품이 있으면 기록
+                soldOut = item.find("div", attrs={"class":"out-of-stock"})
+                if soldOut:
+                    is_soldout = True
+                else:
+                    is_soldout = False         
+
                 name = item.find("img", attrs={"class":"search-product-wrap-img"})['alt']
                 price = item.find("strong", attrs={"class":"price-value"})
                 if price: # price 값이 있으면
@@ -55,8 +73,12 @@ def getItemInfo(soup, itemInfo):
                     rating_count = None
 
                 # DF에 새로운 행으로 데이터 저장
-                itemInfo.loc[len(itemInfo)] = [name, price, rate, rating_count]
+                itemInfo.loc[len(itemInfo)] = [name, price, rate, rating_count, is_soldout]
         
+        
+        if sort:
+            itemInfo.sort_values(by=['rating_count', 'rate'], ascending=False)
+
         return itemInfo
 
     except Exception as e:
@@ -74,7 +96,7 @@ def saveToTsv(name, itemInfo):
 if __name__ == "__main__":
 
     # DF 만들기
-    itemInfo = pd.DataFrame(columns=["name", "price", "rate", "rating_count"])
+    itemInfo = pd.DataFrame(columns=["name", "price", "rate", "rating_count", "is_soldOut"])
    
     # 초기값 설정
     pageNum = 1
@@ -95,6 +117,7 @@ if __name__ == "__main__":
     lastPage = getLastPageNum(soup)
     itemInfo = getItemInfo(soup, itemInfo)
     
+    # 페이지 수 만큼 반복을 실행
     for pageNum in range(2, lastPage+1):
         soup = getReqeustsAndParsing(pageNum, headers)
         itemInfo = getItemInfo(soup, itemInfo)
