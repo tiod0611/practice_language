@@ -19,8 +19,8 @@ import traceback
 
 
 # rquests와 BeautifulSoup 실행
-def getReqeustsAndParsing(pageNum, headers):
-    url = f"https://www.coupang.com/np/search?q=%EB%85%B8%ED%8A%B8%EB%B6%81&channel=user&component=&eventCategory=SRP&trcid=&traid=&sorter=scoreDesc&minPrice=&maxPrice=&priceRange=&filterType=&listSize=72&filter=&isPriceRange=false&brand=&offerCondition=&rating=0&page={pageNum}&rocketAll=false&searchIndexingToken=1=6&backgroundColor="
+def getReqeustsAndParsing(url, pageNum, headers):
+    
     res = requests.get(url, headers=headers)
     res.raise_for_status() # 응답 없을 시 종료
     print("page: {} 진행 중..".format(pageNum))
@@ -111,8 +111,8 @@ if __name__ == "__main__":
             "Accept-Language":"ko-KR,ko;q=0.8,en-US;q=0.5,en;q=0.3"}
 
     # 페이지 마지막 번호 알아내기
-
-    soup = getReqeustsAndParsing(pageNum, headers)
+    url = f"https://www.coupang.com/np/search?q=%EB%85%B8%ED%8A%B8%EB%B6%81&channel=user&component=&eventCategory=SRP&trcid=&traid=&sorter=scoreDesc&minPrice=&maxPrice=&priceRange=&filterType=&listSize=72&filter=&isPriceRange=false&brand=&offerCondition=&rating=0&page={pageNum}&rocketAll=false&searchIndexingToken=1=6&backgroundColor="
+    soup = getReqeustsAndParsing(url, pageNum, headers)
     
     lastPage = getLastPageNum(soup)
     itemInfo = getItemInfo(soup, itemInfo)
