@@ -4,9 +4,13 @@
 *.csv
 *.txt
 *.gitignore
-chromedriver.exe
 .Rproj.user
-.zip
+*.zip
 
 /data
 /.vscode
+
+# 특정 파일
+
+chromedriver.exe
+test.ipynb
