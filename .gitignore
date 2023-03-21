@@ -6,6 +6,7 @@
 *.gitignore
 .Rproj.user
 *.zip
+*.db
 
 /data
 /.vscode
