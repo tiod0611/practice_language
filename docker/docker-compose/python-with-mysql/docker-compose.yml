@@ -10,12 +10,12 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PW}
 
   app:
-    build: 
+    build:
       context: .
       dockerfile: dockerfile
     depends_on:
       - db
-    prots:
+    ports:
       - 3306:3306
     container_name: python_app
     volumes:
