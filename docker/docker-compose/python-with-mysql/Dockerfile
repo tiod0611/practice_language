@@ -1,5 +1,6 @@
 FROM python:3
+RUN apt install python3-pip -y
+COPY . /home/app
 WORKDIR /home/app
-COPY . .
 RUN pip install -r requirements.txt
 CMD ["python", "main.py", "--user", "root"]
