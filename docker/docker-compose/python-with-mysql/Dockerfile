@@ -1,5 +1,4 @@
 FROM python:3
-RUN apt install python3-pip -y
 COPY . /home/app
 WORKDIR /home/app
 RUN pip install -r requirements.txt
