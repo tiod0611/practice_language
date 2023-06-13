@@ -2,7 +2,6 @@
 *.pth
 *.tsv
 *.csv
-*.txt
 *.gitignore
 .Rproj.user
 *.zip
