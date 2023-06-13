@@ -4,8 +4,7 @@ import pymysql
 class DBUpdater:
     def __init__(self, db_pw):
         conn = pymysql.connect(
-            host='172.0.0.1',
-            port=3306,
+            host='localhost',
             user='root',
             password=db_pw
         )
@@ -18,7 +17,6 @@ class DBUpdater:
 
         self.conn = pymysql.connect(
             host='localhost',
-            port=3306,
             user='root',
             password=db_pw,
             db='attendance_db',
