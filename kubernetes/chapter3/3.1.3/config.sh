@@ -50,7 +50,7 @@ modprobe br_netfilter # br_netfilter 모듈을 로드하여 network bridge관련
 echo "192.168.1.10 m-k8s" >> /etc/hosts # /etc/hosts 파일에 해당 내용을 추가
 
 # $1의 인자를 받아서 반복문을 실행. /etc/hosts에 worker node의 ip 주소를 넣는다. 인자는 Vagrant 파일에서 N값으로 받음
-for (( i=1; i<=$1; i++ )); do echo "192.168.1.10$i w$i-k8s" >> /etc/hosts; done
+for (( i=1; i<=$1; i++ )); do echo "192.168.56.10$i w$i-k8s" >> /etc/hosts; done
 
 
 # config DNS
