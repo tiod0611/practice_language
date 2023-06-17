@@ -1,0 +1,19 @@
+apiVersion: apps/v1 # API qjwjs
+kind: Deployment # 오브젝트 종류
+metadata: # 오브젝트에 대한 메타데이터
+  name: echo-hname # 이름
+  labels:
+    app: nginx
+spec:
+  replicas: 3 # 몇개의 파드를 생성할지 결정
+  selector: # Deployment가 관리할 파드를 어떻게 찾는지 정의
+    matchLabels:
+      app: nginx
+  template: # 생성될 파드에 대한 템플릿
+    metadata: # 파드의 메타데이터
+      labels:
+        app: nginx
+    spec: # 파드의 컨테이너 정보
+      containers:
+      - name: echo-hname
+        image: sysnet4admin/echo-hname # 사용되는 이미지
