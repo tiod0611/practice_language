@@ -1,0 +1,18 @@
+apliVersion: apps/v1
+kind: Deployment # 종류
+metadata:   
+  name: rollout-nginx  # Deployment의 이름
+spec:
+  replicas: 3 # 3개의 파드를 실행한다. 
+
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata: # 리소스가 app: nginx인 파드만을 제어 대상으로 사용함.
+      labels:
+        app: nginx
+    spec: # 파드에서 사용될 container 정보
+      containers:
+      - name: nginx
+        image: nginx:1.15.12
