@@ -1,4 +1,4 @@
-apiVersion: apps/v1 # API qjwjs
+apiVersion: apps/v1 # API 버전
 kind: Deployment # 오브젝트 종류
 metadata: # 오브젝트에 대한 메타데이터
   name: echo-hname # 이름
