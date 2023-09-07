@@ -42,3 +42,4 @@ tqdm==4.66.1
 traitlets==5.9.0
 tzdata==2023.3
 wcwidth==0.2.6
+gensim
