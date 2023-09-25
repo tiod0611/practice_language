@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config| # 2는 ruby API 버전, Vagrant config 설정을 시작
+    N = 3 # max number of worker nodes
+    Ver = '1.18.4' # Kubernetes Version to install
+
+    # ============#
+    # Master Node #
+    # ============#
+
+        config.vm.define "m-k8s" do |cfg| # master node의 configure 설정 시작
+            cfg.vm.box = "sysnet4admin/CentOS-k8s" # Vagrant cloud의 sysnet4admin/CentOS-k8s 이미지를 가져온다.
+            cfg.vm.provider "virtualbox" do |vb| # 프로바이더를 virtualbox로 지정, virtualbox 설정 시작
+                vb.name = "m-k8s(github_SysNet4Admin)" # vb의 이름
+                vb.cpus = 2 # cpu의 수
+                vb.memory = 3072 # memory 크기
+                vb.customize ["modifyvm", :id, "--groups", "/k8s-SgMST-1.13.1(github_SysNet4Admin)"] # 그룹을 지정
+            end
+            cfg.vm.host_name = "m-k8s" # host 이름
+            cfg.vm.network "private_network", ip: "192.168.56.10"
+            cfg.vm.network "forwarded_port", guest: 22, host: 60010, auto_correct: true, id: "ssh" # 포트포워딩으로 호스트 60010을 게스트 22번으로 전달. 만약 포트가 중복이라면 auto_correct로 자동 변경함
+            cfg.vm.synced_folder "../data", "/vagrant", disabled: true # host와 vm 간의 디렉터리 동기화가 이뤄지지 않게 설정
+            # 아래는 가상머신에서 실행할 sh파일
+            cfg.vm.provision "shell", path: "config.sh", args: N
+            cfg.vm.provision "shell", path: "install_pkg.sh", args: [Ver, "Main"] # sh파일에 Ver 변수와 "Main" 문자열 값을 넘김
+            cfg.vm.provision "shell", path: "master_node.sh"
+        end
+    
+    # ============#
+    # Worker Node #
+    # ============#
+
+    (1 .. N).each do |i| # 1부터 N까지 반복문
+        config.vm.define "w#{i}-k8s" do |cfg| # worker node에 대한 설정 시작
+            cfg.vm.box = "sysnet4admin/CentOS-k8s"
+            cfg.vm.provider "virtualbox" do |vb|
+                vb.name = "w#{i}-k8s(github_SysNet4Admin)"
+                vb.cpus = 1
+                vb.memory = 2560
+                vb.customize ["modifyvm", :id, "--groups", "/k8s-SgMST-1.14.1(github_SysNet4Admin)"]
+            end
+            cfg.vm.host_name = "w#{i}-k8s"
+            cfg.vm.network "private_network", ip: "192.168.56.10#{i}"
+            cfg.vm.network "forwarded_port", guest: 22, host: "6010#{i}", auto_correct: true, id: "ssh"
+            cfg.vm.synced_folder "../data", "/vagrant", disabled: true
+            cfg.vm.provision "shell", path: "config.sh", args: N
+            cfg.vm.provision "shell", path: "install_pkg.sh", args: Ver # 여기에는 "Main"이 없음
+            cfg.vm.provision "shell", path: "work_nodes.sh" # worker node 설정
+        end
+    end
+end
