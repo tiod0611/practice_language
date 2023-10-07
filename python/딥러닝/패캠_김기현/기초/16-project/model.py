@@ -69,7 +69,7 @@ class ImageClassifier(nn.Module):
         )
 
 
-    def farward(self, x):
+    def forward(self, x):
         y = self.layers(x)
 
         return y
