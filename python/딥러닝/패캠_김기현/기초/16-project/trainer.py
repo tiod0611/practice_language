@@ -33,7 +33,7 @@ class Trainer():
 
         for i, (x_i, y_i) in enumerate(zip(x, y)):
             y_hat_i = self.model(x_i)
-            loss_i = self.crit(y_hat_i, y_i.sqeeuze())
+            loss_i = self.crit(y_hat_i, y_i.squeeze())
 
             # Initialize the gradients of the model.
             self.optimizer.zero_grad()
