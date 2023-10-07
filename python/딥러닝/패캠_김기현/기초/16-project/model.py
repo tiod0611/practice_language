@@ -21,7 +21,7 @@ class Block(nn.Module):
         self.block = nn.Sequential(
             nn.Linear(input_size, output_size),
             nn.LeakyReLU(),
-            get_regularizer(use_batch_norm, dropout_p)
+            get_regularizer(use_batch_norm, output_size)
         )
     
     def forward(self, x):
@@ -38,7 +38,7 @@ class ImageClassifier(nn.Module):
                  output_size,
                  hidden_sizes=[500, 400, 300, 200, 100],
                  use_batch_norm=True,
-                 dropout_p=.4):
+                 dropout_p=.3):
         
         super().__init__()
 
@@ -69,7 +69,7 @@ class ImageClassifier(nn.Module):
         )
 
 
-    def farward(self, x):
+    def forward(self, x):
         y = self.layers(x)
 
         return y

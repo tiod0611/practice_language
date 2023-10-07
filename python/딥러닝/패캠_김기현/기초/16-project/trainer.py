@@ -16,7 +16,7 @@ class Trainer():
 
         # shuffle할 것인지
         if random_split:
-            indices = torch.randperm(x.size)
+            indices = torch.randperm(x.size(0)).cuda()
             x = torch.index_select(x, dim=0, index=indices)
             y = torch.index_select(y, dim=0, index=indices)
 
@@ -33,7 +33,7 @@ class Trainer():
 
         for i, (x_i, y_i) in enumerate(zip(x, y)):
             y_hat_i = self.model(x_i)
-            loss_i = self.crit(y_hat_i, y_i.sqeeuze())
+            loss_i = self.crit(y_hat_i, y_i.squeeze())
 
             # Initialize the gradients of the model.
             self.optimizer.zero_grad()
@@ -50,7 +50,7 @@ class Trainer():
 
         return total_loss / len(x)
     
-    def _validate(self, y, config):
+    def _validate(self, x, y, config):
         # Turn evaluation mode on.
         self.model.eval()
 

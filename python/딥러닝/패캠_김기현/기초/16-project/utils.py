@@ -7,7 +7,7 @@ def load_mnist(is_train=True, flatten=True):
         '../data', train=is_train, download=True,
         transform=transforms.Compose([
             transforms.ToTensor(),
-        ])
+        ]),
     )
 
     x = dataset.data.float() / 255.
@@ -24,7 +24,7 @@ def split_data(x, y, train_ratio=.8):
     valid_cnt = x.size(0) - train_cnt
 
     # Shuffle dataset to split into train/valid set.
-    indices = torch.randperm(x.size(0))
+    indices = torch.randperm(x.size(0)).cuda()
     x = torch.index_select(
         x,
         dim=0,
