@@ -50,7 +50,7 @@ class Trainer():
 
         return total_loss / len(x)
     
-    def _validate(self, y, y, config):
+    def _validate(self, y, config):
         # Turn evaluation mode on.
         self.model.eval()
 
