@@ -16,7 +16,7 @@ class Trainer():
 
         # shuffle할 것인지
         if random_split:
-            indices = torch.randperm(x.size)
+            indices = torch.randperm(x.size(0))
             x = torch.index_select(x, dim=0, index=indices)
             y = torch.index_select(y, dim=0, index=indices)
 
