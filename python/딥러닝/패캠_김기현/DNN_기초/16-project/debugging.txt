@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "C:\Users\kyeul\Desktop\code\practice_language\python\딥러닝\패캠_김기현\기초\16-project\train.py", line 85, in <module>
+    main(config)
+  File "C:\Users\kyeul\Desktop\code\practice_language\python\딥러닝\패캠_김기현\기초\16-project\train.py", line 41, in main
+    x, y = split_data(x.to(device), y.to(device), train_ratio=config.train_ratio)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\kyeul\Desktop\code\practice_language\python\딥러닝\패캠_김기현\기초\16-project\utils.py", line 28, in split_data
+    x = torch.index_select(
+        ^^^^^^^^^^^^^^^^^^^
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument index in method wrapper_CUDA__index_select)
