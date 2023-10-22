@@ -9,7 +9,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 import wandb
-wandb.init(project='CIFAR10 Classification Example(Train)')
+wandb.init(project="CIFAR10 Classification Example(Train)")
 
 # 실행 이름 설정
 wandb.run.name = 'First wandb'
