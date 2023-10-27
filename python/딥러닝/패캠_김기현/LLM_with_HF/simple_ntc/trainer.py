@@ -189,7 +189,7 @@ class Trainer():
         def run_validation(engine, validation_engine, valid_loader):
             validation_engine.run(valid_loader, max_epochs=1)
 
-        train_engine.add_event_handler(
+        train_engine.add_event_handler( # 에폭이 끝날 때마다, run_validation 함수가 실행되도록 함. # argument에서 engine은 자동으로 들어감
             Events.EPOCH_COMPLETED, # event
             run_validation, # fucntion
             validation_engine, valid_loader, # arguments
