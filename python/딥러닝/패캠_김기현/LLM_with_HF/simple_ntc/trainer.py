@@ -83,3 +83,86 @@ class MyEngine(Engine):
             loss = engine.crit(y_hat, y)
 
             if isinstance(y, torch.LongTensor) or isinstance(y, torch.cuda.LongTensor):
+                accuracy = (torch.argmax(y_hat, dim=-1)==y).sum() / float(y.size(0))
+            else:
+                accuracy = 0
+
+        return {
+            'loss':float(loss),
+            'accuracy':float(accuracy)
+        }
+    
+    @staticmethod
+    def attach(train_engine, validation_engine, verbose=VERBOSE_BATCH_WISE):  
+        # Attach는 각각 metrics에 대해 반복된다.
+        # 따라서, 이 함수를 사용함으로써 코드 반복을 줄일 수 있다.
+        # Attaching would be repeated for serveral metrics.
+        # Thus, we can reduce the repeated codes by using this function.
+        def attach_running_average(engine, metric_name):
+            RunningAverage(output_transform=lambda x: x[metric_name]).attach(
+                engine,
+                metric_name,
+            )
+
+        training_metric_names = ['loss', 'accuracy', '|param|', '|g_param|']
+
+        for metric_name in training_metric_names:
+            attach_running_average(train_engine, metric_name)
+
+        # If the verbosity is set, progress bar would be shown for mini-batch iteration.
+        # Without ignite, you can use tqdm to implement progress bar.
+        if verbose >= VERBOSE_BATCH_WISE:
+            pbar = ProgressBar(bar_format=None, ncols=120) # ncols?
+            pbar.attach(train_engine, training_metric_names)
+
+        # If the verbosity is set, statistics would be shown after each epoch.
+        if verbose >= VERBOSE_EPOCH_WISE:
+            @train_engine.on(Events.EPOCH_COMPLETED)
+            def print_train_logs(engine):
+                print('Epoch {} - |param|={:.2e} |grad_param|={:.4e} accuracy={:.4f}'.format(
+                    engine.state.epoch,
+                    engine.state.metrics['|param|'],
+                    engine.state.metrics['|g_param|'],
+                    engine.state.metrics['loss'],
+                    engine.state.metrics['accuracy']
+                ))
+
+        validation_metric_names = ['loss', 'accuracy']
+
+        for metric_name in validation_metric_names:
+            attach_running_average(validation_engine, metric_name)
+
+        # Do same things for validation engine.
+        if verbose >= VERBOSE_BATCH_WISE:
+                pbar = ProgressBar(bar_format=None, nclos=120)
+                pbar.attach(validation_engine, validation_metric_names)
+        
+        if verbose >= VERBOSE_EPOCH_WISE:
+            @validation_engine.on(Events.EPOCH_COMPLETED)
+            def print_valid_logs(engine):
+                print('Validation - loss={:.4e} accuracy={:.4f} best_loss={:.4e}'.format(
+                    engine.state.metrics['loss'],
+                    engine.state.matrics['accuracy'],
+                    engine.best_loss,
+                ))
+    
+    @staticmethod
+    def check_best(engine):
+        loss = float(engine.state.metrics['loss'])
+        if loss <= engine.best_loss: # 만약 현재 에폭이 더 낮은 validation loss를 반환하면
+            engine.best_loss = loss # 가장 낮은 validation loss 값을 업데잍트하고
+            engine.best_model = deepcopy(engine.model.state_dict()) # best_model도 업데이트 한다. 
+
+    @staticmethod
+    def save_model(engine, train_engine, config, **kwargs):
+        torch.save(
+            {
+                'model':engine.best_model,
+                'config':config,
+                **kwargs
+            }, config.model_fn
+        )
+
+
+class Trainer():
+    pass
