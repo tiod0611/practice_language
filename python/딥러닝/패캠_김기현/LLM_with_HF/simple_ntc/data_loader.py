@@ -1,11 +1,7 @@
 import torchtext
 version = list(map(int, torchtext.__version__.split('.')))
+from torchtext import data
 
-# 현재 버전에 맞게 모듈을 가져오는 코드
-if version[0] <= 0 and version[1] < 9:
-    from torchtext import data
-else:
-    from torchtext.legacy import datasets
 
 class DataLoader(object):
     """
