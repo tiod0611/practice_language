@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import Dataset
 
 class TextclassificationCollator():
+    # data 길이를 동일하게 맞춰주는 작업
 
     def __init__(self, tokenizer, max_lenght, with_text=True):
         self.tokenizer = tokenizer
