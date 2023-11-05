@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/kyeul/Desktop/code/practice_language/python/ML/MLFlow/mlruns/0/a67128b6b68848088b7363cc5b29888b/artifacts
+end_time: 1696429464814
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: a67128b6b68848088b7363cc5b29888b
+run_name: aged-grub-477
+run_uuid: a67128b6b68848088b7363cc5b29888b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1696429464661
+status: 4
+tags: []
+user_id: kyeul

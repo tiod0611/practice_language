@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/kyeul/Desktop/code/practice_language/python/ML/MLFlow/mlruns/0/41b4bb1c51c14ca9a8e4ab6d968058fc/artifacts
+end_time: 1696429211942
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 41b4bb1c51c14ca9a8e4ab6d968058fc
+run_name: indecisive-wolf-556
+run_uuid: 41b4bb1c51c14ca9a8e4ab6d968058fc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1696429205764
+status: 4
+tags: []
+user_id: kyeul

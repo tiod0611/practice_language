@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/kyeul/Desktop/code/practice_language/python/ML/MLFlow/mlruns/0/3c40cdab214c45648a8938a794424c21/artifacts
+end_time: 1696429358295
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 3c40cdab214c45648a8938a794424c21
+run_name: unleashed-ant-63
+run_uuid: 3c40cdab214c45648a8938a794424c21
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1696429358173
+status: 4
+tags: []
+user_id: kyeul

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/kyeul/Desktop/code/practice_language/python/ML/MLFlow/mlruns/0/ae998dbe58d44289924b31d08c9d764e/artifacts
+end_time: 1696430202242
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: ae998dbe58d44289924b31d08c9d764e
+run_name: dashing-finch-246
+run_uuid: ae998dbe58d44289924b31d08c9d764e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1696429514655
+status: 3
+tags: []
+user_id: kyeul
