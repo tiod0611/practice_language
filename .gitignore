@@ -220,3 +220,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,windows,git
+python/딥러닝/nlp/classification/뉴스분류_공개코드/BBC-Text-CLF-BERT.pth
+python/딥러닝/nlp/classification/뉴스분류_공개코드/bbc-text.csv
