@@ -2,18 +2,21 @@ import argparse
 import random
 
 import torch
+from sklearn.metrics import accuracy_score
 
 from transformers import BertTokenizerFast
-
+from transformers import BertForSequenceClassification, AlbertForSequenceClassification, RobertaForSequenceClassification
+from transformers import TrainingArguments
+from transformers import Trainer
 
 from utils import read_text
-from bert_dataset import TextClassificationDataset
+from bert_dataset import TextClassificationDataset, TextClassificationCollator
 
 def define_argparser():
     p = argparse.ArgumentParser()
 
-    p.add_argument('--model_fn', required=True)
-    p.add_argument('--train_fn', required=True)
+    p.add_argument('--model_fn', required=True) # 모델 파일 이름
+    p.add_argument('--train_fn', required=True) # 학습 파일 이름
 
     # 아래는 pre-trained model을 입력받는데, 추천리스트가 있음
     # 1. kykim/bert-kor-base
@@ -28,7 +31,7 @@ def define_argparser():
 
     # parameter setting
     p.add_argument('--valid_ratio', type=float, default=.2)
-    p.add_argument('--batch_szie_per_device', type=int, default=32) # 배치사이즈
+    p.add_argument('--batch_size_per_device', type=int, default=64) # 배치사이즈
     p.add_argument('--n_epochs', type=int, default=10)
 
     p.add_argument('--warmup_ratio', type=float, default=.2) # 초기 학습률 도달까지 낮은 학습률로 시작하는 단계(?). 이게 왜 효과적이지? -> 초기 랜덤값에 높은 lr을 설정하면 학습이 잘 안될 수 있다. 이를 방지하기 위해 낮은 값에서 점점 도달하게 함
@@ -96,7 +99,67 @@ def main(config):
 
     # Get pretrained model with specified softmax layer.
     assert not (config.use_albert and config.use_roberta), 'Only one of use_albert and use_roberta can be True.'
+    if config.use_albert:
+        model_loader = AlbertForSequenceClassification
+    elif config.use_roberta:
+        model_loader = RobertaForSequenceClassification
+    else:
+        model_loader = BertForSequenceClassification
+
     
+    model = model_loader.from_pretrained(
+        config.pretrained_model_name,
+        num_labels=len(index_to_label)
+    )
+
+    training_args = TrainingArguments(
+        output_dir='./.checkpoints',
+        num_train_epochs=config.n_epochs,
+        per_device_train_batch_size=config.batch_size_per_device,
+        per_device_eval_batch_size=config.batch_size_per_device,
+        warmup_steps=n_warmup_steps,
+        weight_decay=0.01, # 높은 가중치값에 대해 패널티
+        fp16=True, # mixed precision  사용 # 2000번대 gpu 이상부터는 학습 효율이 좋음
+        evaluation_strategy='epoch', # options that 'no', 'steps', 'epoch'. 'no' is no eval during training, 'steps' is every eval_steps, 'epoch' is end of each epoch.
+        save_strategy='epoch',
+        logging_steps=n_total_iterations // 100, # 
+        save_steps=n_total_iterations // config.n_epochs,
+        load_best_model_at_end=True,
+    )
+
+    def compute_metrics(pred):
+        labels = pred.label_ids
+        preds = pred.predictions.argmax(-1) # 확률값이 가장 높은 index
+
+        return {
+            'accuracy': accuracy_score(labels, preds)
+        }
+
+    trainer = Trainer(
+        model = model,
+        args = training_args,
+        data_collator=TextClassificationCollator( # 
+            tokenizer,
+            config.max_length,
+            with_text=False
+        ),
+        train_dataset = train_dataset,
+        eval_dataset=valid_dataset,
+        compute_metrics=compute_metrics,
+
+    )
+
+    trainer.train() # 훈련 시작
+
+    torch.save({
+        'rnn': None,
+        'cnn': None,
+        'bert': trainer.model.state_dict(),
+        'config':config,
+        'vocab': None,
+        'classes': index_to_label,
+        'tokenizer': tokenizer,
+    }, config.model_fn)
 
 
 
