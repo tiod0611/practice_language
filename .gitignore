@@ -1,8 +1,14 @@
 wandb/
 models/
 data/
-*.pth
 .checkpoints/
+
+# weight file
+*.pth
+
+# data
+*.csv
+*.tsv
 
 ### Git ###
 # Created by https://www.toptal.com/developers/gitignore/api/python
