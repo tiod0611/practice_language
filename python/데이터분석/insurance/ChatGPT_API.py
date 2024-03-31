@@ -11,10 +11,10 @@ client = OpenAI(api_key=API_KEY)
 def request_openai(document):
     '''content를 담고 있는 list를 받아 chat gpt api로부터 답변을 받아냄.'''
 
-    if not isinstance(document, list):
-        raise TypeError("입력 받은 변수가 list가 아닙니다.")
+    # if not isinstance(document, str):
+    #     raise TypeError("입력 받은 변수가 list가 아닙니다.")
 
-    contents = []
+    # contents = []
     
     try:
         response = client.chat.completions.create(
@@ -59,6 +59,13 @@ def request_openai(document):
                     === 검토 결과 ===
                     보험 발생(질병): 화상
                     보장 횟수: 치료시
+
+                    index:5
+                    <문서 내용>
+                    ※ 1사고당 자기부담금 : 대인 없음, 대물누수사고 50만원, 대물누수사고외 20만원
+                    === 검토 결과 ===
+                    보험 발생(질병): 사고
+                    보장 횟수: 1사고당
                     """
                 },
                 {
@@ -66,12 +73,14 @@ def request_openai(document):
                     아래는 대답할 답변의 조건이야. 반영해서 대답해줘. 
 
                     1. '보험 발생(질병)', '보장 횟수'에 대한 결과는 예시처럼 최대한 간결하게 만들어줘.
-                    2. 결과물을 DataFrame에 추가할 수 있도록 dictionary 형태로 만들어줘. 
-                    예시 => {'index': [0, 1, 2, 3, 4], '보험 발생(질병)': ['간병인', '5대골절 수술', '갑상선암, 전립선암', '간·췌장질환 및 폐질환'], '보장 횟수': ['1일당', '수술받은 경우', '최초 1회', '수술당 1회']}
+                    2. 결과물을 DataFrame에 추가할 수 있도록 아래처럼 dictionary 형태로 만들어줘. 
                     3. ast로 바로 적용할 수 있게 python code 형태로 반환해줘.
-                    4. 코드를 반환할 때는 ``` 대신 ''' 형을 사용해줘.
-                    5. 결과를 변수에 대입하는 코드는 빼줘. 깔끔한 딕셔너리 타입으로 반환해줘.
+                    4. 결과를 변수에 대입하는 코드는 빼줘. 깔끔한 딕셔너리 타입으로 반환해줘.
                     
+                    예시
+                    '''
+                    {'index': [0, 1, 2, 3, 4], '보험 발생(질병)': ['간병인', '5대골절 수술', '갑상선암, 전립선암', '간·췌장질환 및 폐질환'], '보장 횟수': ['1일당', '수술받은 경우', '최초 1회', '수술당 1회']}
+                    '''
                     
                     이제부터 아래는 검토해야 할 문서들을 알려줄게. 
                     """
@@ -81,11 +90,11 @@ def request_openai(document):
         )
 
         content = response.choices[0].message.content
-        contents.append(content)
+        # contents.append(content)
     
     except Exception as e:
         print(e)
         return None
     
-    return contents
+    return content
 
