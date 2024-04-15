@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link
+            rel="icon"
+            href="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-1024.png"
+        />
+        <link rel="stylesheet" href="./css/main.css">
+        <title>Login New Page</title>
+    </head>
+    <body>
+        <!-- header.header>nav.wrap>ul>li*3 -->
+        <header class="header">
+            <nav class="wrap">
+                <label class="logo">NP</label>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="join.html" class="active">Join</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+            </nav>
+        </header>
+        <!-- main>section.wrap -->
+        <main>
+            <section class="wrap">
+                <div class="join-wrap">
+                    <div class="attr-wrap">
+                        <label for="email">Work Email</label><br />
+                        <input
+                            type="text"
+                            id="email"
+                            placeholder="example@example.com"
+                        />
+                    </div>
+                    <hr />
+                    <div class="attr-wrap">
+                        <label for="pw">Password</label><br />
+                        <input type="password" id="pw" />
+                    </div>
+                    <hr />
+                    <div class="attr-wrap">
+                        <label for="">Check Password</label><br />
+                        <input type="text" id="" />
+                    </div>
+                    <hr />
+                    <div class="attr-wrap">
+                        <label for="">Sex</label><br />
+                        <label>
+                            <input type="radio" id="addr" name="addr" checked />
+                            Male
+                        </label>
+                        <label>
+                            <input type="radio" id="addr" name="addr" />
+                            Female
+                        </label>
+                    </div>
+                    <hr />
+                    <div class="attr-wrap">
+                        <label for="birthday">Birthday</label><br />
+                        <input type="date" id="birthday" value="2024-01-01" />
+                    </div>
+                    <hr />
+                    <div class="attr-wrap">
+                        <label for="ckpw">Subscription Path</label><br />
+                        <select name="" id="subscription">
+                            <option value="opt1">Not Selected</option>
+                            <option value="opt2">Recommended by Friends</option>
+                            <option value="opt3">Advertisments</option>
+                        </select>
+                    </div>
+                    <hr />
+                    <small class="msg">test msg</small>
+                </div>
+                <button id="join-btn" type="button">join</button>
+
+            </section>
+        </main>
+        <footer class="footer">
+            <p>All Light reserved. @maker K</p>
+        </footer>
+    </body>
+</html>
