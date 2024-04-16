@@ -1,0 +1,50 @@
+.join-wrap{
+    width: 300px;
+}
+
+.attr-wrap{
+    height: 75px;
+}
+
+.attr-wrap>label{
+    float: left;
+    margin-top: 10px;
+}
+
+#email, #pw, #ckpw, #birthday, #subscription{
+    border: none;
+    border-radius: 3px;
+    padding: 10px;
+    margin-top: 10px;
+    width: calc(100% - 20px);
+}
+
+#subscription{
+    width: 100% !important;
+}
+
+.input-sex{
+    margin: 10px 0px 0px -5px;
+}
+
+.input-sex>label{
+    float: left;
+}
+
+body > main > section > div > hr:nth-child(8){
+    margin-top: -20px;
+}
+
+.msg{
+    float: left;
+    height: 0;
+    font-size: 10px;
+    color: #2F3C7E;
+    display: none;
+}
+
+#join-btn{
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+}

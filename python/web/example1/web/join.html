@@ -4,18 +4,23 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <link
-            rel="icon"
-            href="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-1024.png"
-        />
-        <link rel="stylesheet" href="./css/main.css">
         <title>Login New Page</title>
+
+        <link rel="icon" href="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-1024.png"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="./css/join.css">
+        <link rel="stylesheet" href="./css/main.css">
+        
     </head>
     <body>
         <!-- header.header>nav.wrap>ul>li*3 -->
         <header class="header">
             <nav class="wrap">
-                <label class="logo">NP</label>
+                <label class="logo">
+                    <a href="index.html">New Page</a>
+                </label>
                 <ul>
                     <li><a href="index.html">Home</a></li>
                     <li><a href="join.html" class="active">Join</a></li>
@@ -42,20 +47,22 @@
                     </div>
                     <hr />
                     <div class="attr-wrap">
-                        <label for="">Check Password</label><br />
-                        <input type="text" id="" />
+                        <label for="ckpw">Check Password</label><br />
+                        <input type="text" id="ckpw" />
                     </div>
                     <hr />
                     <div class="attr-wrap">
-                        <label for="">Sex</label><br />
-                        <label>
-                            <input type="radio" id="addr" name="addr" checked />
-                            Male
-                        </label>
-                        <label>
-                            <input type="radio" id="addr" name="addr" />
-                            Female
-                        </label>
+                        <label for="sex">Sex</label><br>
+                        <div class="input-sex">
+                            <label>
+                                <input type="radio" id="sex" name="sex" checked />
+                                Male
+                            </label>
+                            <label>
+                                <input type="radio" id="sex" name="sex" />
+                                Female
+                            </label>
+                        </div>
                     </div>
                     <hr />
                     <div class="attr-wrap">

@@ -40,14 +40,24 @@ header>.wrap>ul>li{
     margin-left: 10px;
 }
 
+header>.wrap>.logo>a{
+    color: #F9EC7E;
+    text-decoration: none;
+}
+
 header>.wrap>ul>li>a{
+    color: #F9EC7E;
     text-decoration: none;
     font-weight: bold;
 }
 
 header>.wrap>ul>li>a.active{
-    color: #1803A5;
-    border-bottom: 3px solid #1803A5;
+    color: #2F3C7E;
+    border-bottom: 3px solid #2F3C7E;
+}
+
+header>.wrap>ul>li>a:hover{
+    color: #355952;
 }
 
 /* footer */
