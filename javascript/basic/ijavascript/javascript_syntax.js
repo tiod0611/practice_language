@@ -126,3 +126,131 @@ for(i=0; i<3; i++){
     console.log(i, 'js')
 }
 
+// 로또 번호 출력: 중복을 허용
+// 조건 1: 1~45 사이에 랜덤한 숫자를 출력
+// 조건 2: 6번 반복해야 함
+// 조건 3: 중복을 허용
+
+var count = 6, lotto = '';
+
+for(var i=0; i < count; i++){
+    var randNumber = Math.random();
+    lotto += Math.ceil(randNumber*44) + 1 + ' ';
+};
+console.log(lotto);
+
+// 6. 함수 : function
+// 중복코드를 묶어서 코드 작성 및 실행
+/// 사용법: 함수 선언 > 함수 호출(코드 실행)
+
+function show_lotto(count){
+    var lotto='';
+    for (var i=0; i<count; i++){
+        var randNumber = Math.ceil((Math.random() * 44)) + 1;
+        lotto += randNumber + ' ';
+    };
+    console.log(lotto);
+};
+
+show_lotto(6);
+
+
+// 함수선언 1: 함수 선언식
+// 일반적인 사용법
+// 코드의 최상단으로 올라가서 선언됨. -> 호이스팅
+// 반드시 우선 선언됨.
+function plus1(n1, n2){
+    return n1 + n2;
+}
+// 함수선언 2: 함수 표현식
+// 함수를 변수처럼 사용
+// 코드의 순서대로 실행됨. 
+var plus2 = function(n1, n2){
+    return n1 + n2;
+}
+console.log(plus2(1, 2));
+
+
+// 익명함수
+// 선언과 동시에 호출하는 함수
+
+// 일단 일반적인 방법
+function minus1(n1, n2){
+    return n1 - n2;
+};
+
+console.log(minus1(3,6));
+
+// 익명함수
+// 함수 생성을 괄호로 감쌈
+(function minus2(n1, n2){
+    console.log(n1 - n2);
+}(4, 9));
+
+// scope : 
+// 함수 안과 함수 밖에서 선언된 변수는 다른 영역의 메모리를 사용함.
+// 함수 안 : local, 지역
+// 함수 밖 : global, 전역
+
+var data = 10;
+
+function change(){
+    // var data = 20;
+    // 만약 global로 사용하고 싶다면 외부 변수를 호출하면 됨.
+    data = 20;
+
+    // let으로 구별하기도 함. 
+}
+change();
+console.log(data);
+
+// 객체
+// array: 배열 / python - list
+// Class: 클래스 / python - class
+
+var arr = [1, 2, 3, 'a', 'b'];
+console.log(typeof arr, arr, arr[0]);
+
+arr.push('c');
+console.log(arr);
+
+// 객체 생성 1
+// dictionary 처럼 생성하는 방법
+var account = {
+    balance: 10000,
+    withdraw: function(amount){
+        account.balance -= amount;
+    },
+}
+
+account.withdraw(1000);
+console.log(account.balance);
+
+// 객체 생성 2
+// 함수를 사용해서 생성할 때, 이 경우 대문자로 시작
+function Person(name){
+    this.name = name
+}
+
+var person = new Person('Tom'); // 새로운 instance 생성에는 new를 사용함.
+console.log(person.name);
+
+// 클래스는 "하나의 목적 아래 모여있는 변수와 함수의 집합체"라고 생각하자.
+
+
+
+// json 객체 : 웹 서비스에서 데이터를 주고 받을 때 사용하는 포멧
+// 웹서비스에서는 문자열만 사용 가능하기 때문
+// 객체 -> 문자열
+var data ={
+    name: 'Tom',
+    addr: 'Seoul',
+};
+console.log(typeof data);
+var json = JSON.stringify(data);
+console.log(typeof json);
+
+
+// 문자열 -> 객체
+var jsonObj = JSON.parse(json);
+console.log(typeof jsonObj, jsonObj);
