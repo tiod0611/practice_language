@@ -71,9 +71,10 @@ def solution_2(numbers, k):
 
 def solution_3(numbers, k):
     numbers = list(set(numbers))
+    n = len(numbers)
     summation = []
-    for i in range(n-2):
-        for j in range(i+1, n-1):
+    for i in range(n):
+        for j in range(i+1, n):
             for m in range(j+1, n):
                 summation.append(numbers[i] + numbers[j] + numbers[m])
     result = sorted(summation, reverse=True)[k-1]
