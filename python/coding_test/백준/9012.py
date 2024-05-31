@@ -1,4 +1,7 @@
 
+'''
+https://www.acmicpc.net/status?user_id=gyul611&problem_id=9012&from_mine=1
+'''
 def stack_vps(ps):
     stack = []
 
