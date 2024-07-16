@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/kyeul/Desktop/code/practice_language/python/mlflow/tutorials/mlruns/470917812937639102/200625d8a3ec41f58a4b1f39da67fbfa/artifacts
+end_time: 1718004822811
+entry_point_name: ''
+experiment_id: '470917812937639102'
+lifecycle_stage: active
+run_id: 200625d8a3ec41f58a4b1f39da67fbfa
+run_name: incongruous-shad-522
+run_uuid: 200625d8a3ec41f58a4b1f39da67fbfa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1718004816898
+status: 3
+tags: []
+user_id: kyeul
