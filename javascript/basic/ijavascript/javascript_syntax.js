@@ -61,6 +61,8 @@ var data3 = NaN;
 
 console.log(typeof data1, typeof data2, typeof data3);
 
+console.log(NaN == NaN) // false
+
 // 3. 연산자
 // 산술: 데이터 + 데이터 => 데이터
 // 비교: 데이터 + 데이터 => 논리값, 조건이 1개일 때 사용/ ==와 ===가 다름
@@ -164,7 +166,7 @@ function plus1(n1, n2){
 }
 // 함수선언 2: 함수 표현식
 // 함수를 변수처럼 사용
-// 코드의 순서대로 실행됨. 
+// 코드의 순서대로 실행됨. like.. python..
 var plus2 = function(n1, n2){
     return n1 + n2;
 }
@@ -254,3 +256,27 @@ console.log(typeof json);
 // 문자열 -> 객체
 var jsonObj = JSON.parse(json);
 console.log(typeof jsonObj, jsonObj);
+
+
+
+// 
+//
+var data=10;
+function change(){
+    data=30;
+    var data=20;
+}
+change();
+console.log(data); // 10 출력
+
+
+var data = {name: 'Has\'y"dd"dfe``'};
+var json_str = JSON.stringify(data);
+
+console.log(data);
+console.log(json_str);
+
+var json_obj = JSON.parse(json_str);
+console.log(json_obj);
+
+// javascript로 이벤트 발생하기

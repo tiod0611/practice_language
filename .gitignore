@@ -13,6 +13,9 @@ data/
 # specific
 test-klue/
 
+# auth
+*.pem
+*.ppk
 
 ### Git ###
 # Created by https://www.toptal.com/developers/gitignore/api/python
@@ -194,3 +197,4 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+langchain-kr_from_teddylee

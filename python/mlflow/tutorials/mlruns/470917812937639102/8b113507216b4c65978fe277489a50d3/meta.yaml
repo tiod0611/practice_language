@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/kyeul/Desktop/code/practice_language/python/mlflow/tutorials/mlruns/470917812937639102/8b113507216b4c65978fe277489a50d3/artifacts
+end_time: 1718004339040
+entry_point_name: ''
+experiment_id: '470917812937639102'
+lifecycle_stage: active
+run_id: 8b113507216b4c65978fe277489a50d3
+run_name: nimble-skunk-752
+run_uuid: 8b113507216b4c65978fe277489a50d3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1718004333569
+status: 3
+tags: []
+user_id: kyeul
