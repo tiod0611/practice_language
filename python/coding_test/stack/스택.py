@@ -10,7 +10,7 @@ class Stack:
         
     
     def pop(self):
-        if self.empty() == 0:
+        if self.stack:
             print(self.stack.pop())
         else:
             print(-1)
@@ -19,13 +19,13 @@ class Stack:
         print(len(self.stack))
 
     def empty(self):
-        if len(self.stack) <= 0: # 원소가 없으면 1
-            return 1
+        if self.stack: # 원소가 있으면 0
+            return 0
         else:
-            return 0 #원소가 있으면 0
+            return 1 #원소가 있으면 1
 
     def top(self):
-        if self.empty() == 0:
+        if self.stack:
             print(self.stack[-1])
         else:
             print(-1)
